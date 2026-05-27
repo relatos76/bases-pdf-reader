@@ -184,7 +184,41 @@
         padding: 8px;
         border-radius: 16px;
       }
-    }
+    }/* Botones más visibles para el lector */
+.controls button {
+  width: 64px !important;
+  height: 48px !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.controls {
+  gap: 14px !important;
+}
+
+.page-info {
+  font-size: 15px !important;
+}
+
+@media (max-width: 560px) {
+  .controls button {
+    width: 58px !important;
+    height: 46px !important;
+    font-size: 23px !important;
+  }
+
+  .controls {
+    gap: 10px !important;
+  }
+
+  .page-info {
+    font-size: 14px !important;
+  }
+}
   </style>
 </head>
 
