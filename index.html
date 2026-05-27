@@ -30,7 +30,60 @@
 
     .app {
       min-height: 100vh;
-      padding: 8px 8px 78px;
+      padding: 8px 8px 28px;
+    }
+
+    .reader-bar {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto 10px;
+      background: var(--azul);
+      color: var(--crema);
+      border: 1px solid rgba(197,154,69,0.45);
+      border-radius: 999px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 24px rgba(20,36,63,0.24);
+    }
+
+    .reader-bar button {
+      border: 1px solid rgba(197,154,69,0.45);
+      background: transparent;
+      color: var(--crema);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .reader-bar button:hover {
+      background: rgba(255,246,223,0.10);
+    }
+
+    .reader-bar button.primary {
+      background: var(--crema);
+      color: var(--azul);
+      border-color: var(--crema);
+    }
+
+    .reader-bar button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
     .viewer {
@@ -59,71 +112,6 @@
       box-shadow: 0 8px 22px rgba(0,0,0,0.16);
     }
 
-    .mini-controls {
-      position: fixed;
-      left: 50%;
-      bottom: 12px;
-      transform: translateX(-50%);
-      z-index: 999;
-      width: calc(100% - 20px);
-      max-width: 560px;
-      background: var(--azul);
-      color: var(--crema);
-      border: 1px solid rgba(197,154,69,0.45);
-      border-radius: 999px;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 8px 24px rgba(20,36,63,0.28);
-    }
-
-    .mini-controls button {
-      border: 1px solid rgba(197,154,69,0.45);
-      background: transparent;
-      color: var(--crema);
-      border-radius: 999px;
-      padding: 9px 12px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .mini-controls button:hover {
-      background: rgba(255,246,223,0.10);
-    }
-
-    
-
-    .page-info {
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
-      letter-spacing: 0.02em;
-    }
-.exit-floating {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  border: 1px solid rgba(197,154,69,0.55);
-  background: var(--azul);
-  color: var(--crema);
-  border-radius: 999px;
-  padding: 9px 14px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 8px 22px rgba(20,36,63,0.24);
-}
-
-.exit-floating:hover {
-  background: #1d3153;
-}
     .message {
       padding: 28px 14px;
       text-align: center;
@@ -134,28 +122,27 @@
 
     @media (max-width: 560px) {
       .app {
-        padding: 6px 4px 76px;
+        padding: 6px 4px 24px;
+      }
+
+      .reader-bar {
+        border-radius: 18px;
+        gap: 6px;
+        padding: 7px;
+      }
+
+      .reader-bar button {
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+
+      .page-info {
+        font-size: 11px;
       }
 
       .viewer {
         padding: 4px;
         border-radius: 14px;
-      }
-
-      .mini-controls {
-        bottom: 8px;
-        width: calc(100% - 12px);
-        padding: 7px;
-        gap: 6px;
-      }
-
-      .mini-controls button {
-        padding: 8px 10px;
-        font-size: 12px;
-      }
-
-      .page-info {
-        font-size: 11px;
       }
     }
   </style>
@@ -163,23 +150,26 @@
 
 <body>
   <main class="app">
+
+    <section class="reader-bar">
+      <button id="prev">←</button>
+
+      <span class="page-info">
+        <span id="page_num">1</span> / <span id="page_count">...</span>
+      </span>
+
+      <button id="next">→</button>
+      <button id="bigBtn" class="primary">Grande</button>
+      <button id="fullBtn">Pantalla</button>
+      <button id="exitBtn" class="primary">Salir</button>
+    </section>
+
     <section class="viewer" id="viewer">
       <div class="canvas-wrap">
         <canvas id="pdf-canvas"></canvas>
       </div>
     </section>
 
-    <button id="exitBtn" class="exit-floating">Salir</button>
-
-<section class="mini-controls">
-  <button id="prev">←</button>
-
-  <span class="page-info">
-    <span id="page_num">1</span> / <span id="page_count">...</span>
-  </span>
-
-  <button id="next">→</button>
-</section>
   </main>
 
   <script type="module">
@@ -196,6 +186,7 @@
     let pageRendering = false;
     let pageNumPending = null;
     let currentScale = 1;
+    let bigMode = false;
 
     const canvas = document.getElementById('pdf-canvas');
     const ctx = canvas.getContext('2d');
@@ -203,6 +194,9 @@
 
     const pageNumEl = document.getElementById('page_num');
     const pageCountEl = document.getElementById('page_count');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const bigBtn = document.getElementById('bigBtn');
 
     function calculateFitScale(page) {
       const baseViewport = page.getViewport({ scale: 1 });
@@ -210,11 +204,17 @@
       return availableWidth / baseViewport.width;
     }
 
+    function updateButtons() {
+      prevBtn.disabled = pageNum <= 1;
+      nextBtn.disabled = pdfDoc && pageNum >= pdfDoc.numPages;
+    }
+
     function renderPage(num) {
       pageRendering = true;
 
       pdfDoc.getPage(num).then((page) => {
-        currentScale = calculateFitScale(page);
+        const fitScale = calculateFitScale(page);
+        currentScale = bigMode ? fitScale * 1.55 : fitScale;
 
         const viewport = page.getViewport({ scale: currentScale });
         const outputScale = window.devicePixelRatio || 1;
@@ -242,6 +242,7 @@
         });
 
         pageNumEl.textContent = num;
+        updateButtons();
       });
     }
 
@@ -256,15 +257,34 @@
     function previousPage() {
       if (pageNum <= 1) return;
       pageNum--;
-      queueRenderPage(pageNum);
+      viewer.scrollLeft = 0;
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      queueRenderPage(pageNum);
     }
 
     function nextPage() {
       if (pageNum >= pdfDoc.numPages) return;
       pageNum++;
-      queueRenderPage(pageNum);
+      viewer.scrollLeft = 0;
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      queueRenderPage(pageNum);
+    }
+
+    function toggleBig() {
+      bigMode = !bigMode;
+      bigBtn.textContent = bigMode ? 'Ajustar' : 'Grande';
+      viewer.scrollLeft = 0;
+      queueRenderPage(pageNum);
+    }
+
+    function toggleFullScreen() {
+      const root = document.documentElement;
+
+      if (!document.fullscreenElement) {
+        root.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
     }
 
     function exitReader() {
@@ -275,9 +295,17 @@
       }
     }
 
-    document.getElementById('prev').addEventListener('click', previousPage);
-    document.getElementById('next').addEventListener('click', nextPage);
+    prevBtn.addEventListener('click', previousPage);
+    nextBtn.addEventListener('click', nextPage);
+    bigBtn.addEventListener('click', toggleBig);
+    document.getElementById('fullBtn').addEventListener('click', toggleFullScreen);
     document.getElementById('exitBtn').addEventListener('click', exitReader);
+
+    document.addEventListener('fullscreenchange', () => {
+      setTimeout(() => {
+        if (pdfDoc) queueRenderPage(pageNum);
+      }, 250);
+    });
 
     window.addEventListener('resize', () => {
       if (pdfDoc) {
