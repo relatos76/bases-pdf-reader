@@ -6,12 +6,9 @@
 
   <title>Lector PDF | Bases de la Música</title>
 
- 
-
   <style>
     :root {
       --fondo: #f5efe3;
-      --panel: #fffaf0;
       --azul: #14243f;
       --crema: #fff6df;
       --dorado: #c59a45;
@@ -25,9 +22,7 @@
 
     body {
       margin: 0;
-      background:
-        radial-gradient(circle at top, rgba(197,154,69,0.18), transparent 34%),
-        linear-gradient(180deg, #f8f2e6 0%, #efe4d1 100%);
+      background: var(--fondo);
       color: var(--texto);
       font-family: Arial, sans-serif;
       overflow-x: hidden;
@@ -35,80 +30,20 @@
 
     .app {
       min-height: 100vh;
-      padding: 10px 10px 24px;
-    }
-
-    .controls {
-      max-width: 980px;
-      margin: 0 auto 12px;
-      padding: 14px 12px;
-      background: var(--azul);
-      border: 1px solid rgba(197,154,69,0.35);
-      border-radius: 20px;
-      box-shadow: 0 10px 28px rgba(20,36,63,0.18);
-      text-align: center;
-    }
-
-    .status {
-      color: var(--crema);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 14px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 8px 0;
-    }
-
-    button {
-      border: 1px solid rgba(197,154,69,0.45);
-      border-radius: 999px;
-      padding: 11px 16px;
-      background: transparent;
-      color: var(--crema);
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: rgba(255,246,223,0.10);
-    }
-
-    button.primary {
-      background: var(--crema);
-      color: var(--azul);
-      border-color: var(--crema);
-    }
-
-    button.primary:hover {
-      background: #ffffff;
-    }
-
-    button:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
+      padding: 8px 8px 78px;
     }
 
     .viewer {
+      width: 100%;
       max-width: 980px;
       margin: 0 auto;
-      padding: 14px;
-      background: rgba(255,250,240,0.76);
+      padding: 8px;
+      background: rgba(255,250,240,0.85);
       border: 1px solid var(--borde);
-      border-radius: 20px;
-      box-shadow: 0 12px 32px rgba(20,36,63,0.12);
+      border-radius: 18px;
       overflow: auto;
       -webkit-overflow-scrolling: touch;
+      box-shadow: 0 10px 28px rgba(20,36,63,0.10);
     }
 
     .canvas-wrap {
@@ -121,7 +56,56 @@
       margin: 0 auto;
       background: white;
       border-radius: 8px;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.16);
+    }
+
+    .mini-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+      z-index: 999;
+      width: calc(100% - 20px);
+      max-width: 560px;
+      background: var(--azul);
+      color: var(--crema);
+      border: 1px solid rgba(197,154,69,0.45);
+      border-radius: 999px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(20,36,63,0.28);
+    }
+
+    .mini-controls button {
+      border: 1px solid rgba(197,154,69,0.45);
+      background: transparent;
+      color: var(--crema);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .mini-controls button:hover {
+      background: rgba(255,246,223,0.10);
+    }
+
+    .mini-controls button.salir {
+      background: var(--crema);
+      color: var(--azul);
+      border-color: var(--crema);
+    }
+
+    .page-info {
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
     }
 
     .message {
@@ -132,43 +116,30 @@
       line-height: 1.5;
     }
 
-    .fullscreen-mode {
-      background: var(--fondo);
-    }
-
-    .fullscreen-mode .app {
-      padding: 10px;
-    }
-
-    .fullscreen-mode .controls {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
     @media (max-width: 560px) {
       .app {
-        padding: 8px 6px 18px;
-      }
-
-      .controls {
-        padding: 12px 8px;
-        border-radius: 16px;
-      }
-
-      .status {
-        font-size: 12px;
-        line-height: 1.4;
-      }
-
-      button {
-        padding: 10px 12px;
-        font-size: 11px;
+        padding: 6px 4px 76px;
       }
 
       .viewer {
-        padding: 8px;
-        border-radius: 16px;
+        padding: 4px;
+        border-radius: 14px;
+      }
+
+      .mini-controls {
+        bottom: 8px;
+        width: calc(100% - 12px);
+        padding: 7px;
+        gap: 6px;
+      }
+
+      .mini-controls button {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .page-info {
+        font-size: 11px;
       }
     }
   </style>
@@ -176,32 +147,21 @@
 
 <body>
   <main class="app">
-    <section class="controls">
-      <div class="status">
-        Página <span id="page_num">1</span> de <span id="page_count">...</span> · Zoom <span id="zoom_level">...</span>%
-      </div>
-
-      <div class="row">
-        <button id="prev">← Anterior</button>
-        <button id="next">Siguiente →</button>
-      </div>
-
-      <div class="row">
-        <button id="zoomOut">Zoom -</button>
-        <button id="fitWidth" class="primary">Ajustar ancho</button>
-        <button id="readBig" class="primary">Leer más grande</button>
-        <button id="zoomIn">Zoom +</button>
-      </div>
-
-      <div class="row">
-        <button id="fullScreen">Pantalla completa</button>
-      </div>
-    </section>
-
     <section class="viewer" id="viewer">
       <div class="canvas-wrap">
         <canvas id="pdf-canvas"></canvas>
       </div>
+    </section>
+
+    <section class="mini-controls">
+      <button id="prev">←</button>
+
+      <span class="page-info">
+        <span id="page_num">1</span> / <span id="page_count">...</span>
+      </span>
+
+      <button id="next">→</button>
+      <button id="exitBtn" class="salir">Salir</button>
     </section>
   </main>
 
@@ -212,13 +172,13 @@
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 
     const url = '7-bloqueos-gratuito-bases.pdf';
+    const exitUrl = 'https://www.basesdelamusica.com/#materiales';
 
     let pdfDoc = null;
     let pageNum = 1;
     let pageRendering = false;
     let pageNumPending = null;
     let currentScale = 1;
-    let fitMode = true;
 
     const canvas = document.getElementById('pdf-canvas');
     const ctx = canvas.getContext('2d');
@@ -226,19 +186,10 @@
 
     const pageNumEl = document.getElementById('page_num');
     const pageCountEl = document.getElementById('page_count');
-    const zoomLevelEl = document.getElementById('zoom_level');
-
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
-
-    function updateButtons() {
-      prevBtn.disabled = pageNum <= 1;
-      nextBtn.disabled = pdfDoc && pageNum >= pdfDoc.numPages;
-    }
 
     function calculateFitScale(page) {
       const baseViewport = page.getViewport({ scale: 1 });
-      const availableWidth = viewer.clientWidth - 28;
+      const availableWidth = viewer.clientWidth - 10;
       return availableWidth / baseViewport.width;
     }
 
@@ -246,9 +197,7 @@
       pageRendering = true;
 
       pdfDoc.getPage(num).then((page) => {
-        if (fitMode) {
-          currentScale = calculateFitScale(page);
-        }
+        currentScale = calculateFitScale(page);
 
         const viewport = page.getViewport({ scale: currentScale });
         const outputScale = window.devicePixelRatio || 1;
@@ -276,8 +225,6 @@
         });
 
         pageNumEl.textContent = num;
-        zoomLevelEl.textContent = Math.round(currentScale * 100);
-        updateButtons();
       });
     }
 
@@ -293,66 +240,30 @@
       if (pageNum <= 1) return;
       pageNum--;
       queueRenderPage(pageNum);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function nextPage() {
       if (pageNum >= pdfDoc.numPages) return;
       pageNum++;
       queueRenderPage(pageNum);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function zoomIn() {
-      fitMode = false;
-      currentScale += 0.15;
-      queueRenderPage(pageNum);
-    }
-
-    function zoomOut() {
-      fitMode = false;
-      if (currentScale <= 0.45) return;
-      currentScale -= 0.15;
-      queueRenderPage(pageNum);
-    }
-
-    function fitWidth() {
-      fitMode = true;
-      queueRenderPage(pageNum);
-    }
-
-    function readBig() {
-      fitMode = false;
-      currentScale = currentScale * 1.35;
-      queueRenderPage(pageNum);
-    }
-
-    function toggleFullScreen() {
-      const doc = document;
-      const root = document.documentElement;
-
-      if (!doc.fullscreenElement) {
-        root.requestFullscreen?.();
-      } else {
-        doc.exitFullscreen?.();
+    function exitReader() {
+      try {
+        window.top.location.href = exitUrl;
+      } catch (error) {
+        window.location.href = exitUrl;
       }
     }
 
     document.getElementById('prev').addEventListener('click', previousPage);
     document.getElementById('next').addEventListener('click', nextPage);
-    document.getElementById('zoomIn').addEventListener('click', zoomIn);
-    document.getElementById('zoomOut').addEventListener('click', zoomOut);
-    document.getElementById('fitWidth').addEventListener('click', fitWidth);
-    document.getElementById('readBig').addEventListener('click', readBig);
-    document.getElementById('fullScreen').addEventListener('click', toggleFullScreen);
-
-    document.addEventListener('fullscreenchange', () => {
-      document.body.classList.toggle('fullscreen-mode', !!document.fullscreenElement);
-      setTimeout(() => {
-        if (pdfDoc) queueRenderPage(pageNum);
-      }, 250);
-    });
+    document.getElementById('exitBtn').addEventListener('click', exitReader);
 
     window.addEventListener('resize', () => {
-      if (fitMode && pdfDoc) {
+      if (pdfDoc) {
         queueRenderPage(pageNum);
       }
     });
@@ -363,7 +274,7 @@
       renderPage(pageNum);
     }).catch(() => {
       viewer.innerHTML =
-        '<p class="message">No se pudo cargar el PDF. Revisa que el nombre del archivo esté escrito exactamente igual dentro del código.</p>';
+        '<p class="message">No se pudo cargar el PDF. Revisa que el archivo se llame exactamente: 7-bloqueos-gratuito-bases.pdf</p>';
     });
   </script>
 </body>
