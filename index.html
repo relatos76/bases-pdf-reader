@@ -33,9 +33,9 @@
     }
 
     .app {
-      min-height: 100vh;
-      padding: 18px 12px 28px;
-    }
+  min-height: auto;
+  padding: 0 12px 24px;
+}
 
     .header {
       max-width: 940px;
@@ -79,8 +79,8 @@
     }
 
     .controls {
-      max-width: 940px;
-      margin: 0 auto 14px;
+  max-width: 940px;
+  margin: 0 auto 14px;
       padding: 10px;
       background: var(--azul);
       border-radius: 18px;
@@ -224,13 +224,7 @@
 
 <body>
   <main class="app">
-    <section class="header">
-      <div class="etiqueta">Bases de la Música</div>
-      <h1>Guía gratuita para empezar</h1>
-      <p class="sub">
-        Puedes leer este material desde la página. Usa las flechas para avanzar y los botones de zoom para leer con más comodidad.
-      </p>
-    </section>
+   
 
     <section class="controls">
       <button id="prev">←</button>
@@ -246,9 +240,7 @@
       <canvas id="pdf-canvas"></canvas>
     </section>
 
-    <p class="nota">
-      Material educativo de Bases de la Música. Para descargar materiales oficiales, usa únicamente los enlaces publicados en esta página.
-    </p>
+    
   </main>
 
   <script type="module">
