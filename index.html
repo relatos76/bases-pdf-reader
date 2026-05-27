@@ -145,6 +145,28 @@
         border-radius: 14px;
       }
     }
+    /* Flechas más visibles sin agrandar toda la barra */
+#prev,
+#next {
+  width: 44px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 560px) {
+  #prev,
+  #next {
+    width: 46px !important;
+    height: 38px !important;
+    font-size: 24px !important;
+  }
+}
   </style>
 </head>
 
