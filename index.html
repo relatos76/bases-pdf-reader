@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Lector | Bases de la Música</title>
+  <title>Lector PDF | Bases de la Música</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
 
   <style>
     :root {
       --fondo: #f5efe3;
-      --tarjeta: #fffaf0;
+      --panel: #fffaf0;
       --azul: #14243f;
-      --azul2: #173f46;
+      --crema: #fff6df;
       --dorado: #c59a45;
-      --texto: #1f2740;
+      --texto: #18213b;
       --borde: rgba(20, 36, 63, 0.18);
     }
 
@@ -26,221 +26,183 @@
     body {
       margin: 0;
       background:
-        radial-gradient(circle at top, rgba(197,154,69,0.20), transparent 34%),
+        radial-gradient(circle at top, rgba(197,154,69,0.18), transparent 34%),
         linear-gradient(180deg, #f8f2e6 0%, #efe4d1 100%);
-      font-family: Georgia, "Times New Roman", serif;
       color: var(--texto);
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
     }
 
     .app {
-  min-height: auto;
-  padding: 0 12px 24px;
-}
-
-    .header {
-      max-width: 940px;
-      margin: 0 auto 14px;
-      padding: 18px 16px 16px;
-      background: var(--tarjeta);
-      border: 1px solid var(--borde);
-      border-radius: 22px;
-      box-shadow: 0 10px 28px rgba(20, 36, 63, 0.10);
-      text-align: center;
-    }
-
-    .etiqueta {
-      display: inline-block;
-      margin-bottom: 8px;
-      padding: 6px 11px;
-      border-radius: 999px;
-      background: rgba(20, 36, 63, 0.08);
-      color: var(--azul);
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      color: var(--azul);
-      font-size: clamp(23px, 5vw, 38px);
-      line-height: 1.05;
-    }
-
-    .sub {
-      max-width: 650px;
-      margin: 9px auto 0;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      line-height: 1.45;
-      color: #4f5366;
+      min-height: 100vh;
+      padding: 10px 10px 24px;
     }
 
     .controls {
-  max-width: 940px;
-  margin: 0 auto 14px;
-      padding: 10px;
+      max-width: 980px;
+      margin: 0 auto 12px;
+      padding: 14px 12px;
       background: var(--azul);
-      border-radius: 18px;
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      box-shadow: 0 8px 22px rgba(20, 36, 63, 0.22);
+      border: 1px solid rgba(197,154,69,0.35);
+      border-radius: 20px;
+      box-shadow: 0 10px 28px rgba(20,36,63,0.18);
+      text-align: center;
     }
 
-   button {
-  border: 0;
-  border-radius: 999px;
-  width: 54px;
-  height: 44px;
-  background: #fff6df;
-  color: var(--azul);
-  font-family: Arial, sans-serif;
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+    .status {
+      color: var(--crema);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+
+    button {
+      border: 1px solid rgba(197,154,69,0.45);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: transparent;
+      color: var(--crema);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
 
     button:hover {
+      background: rgba(255,246,223,0.10);
+    }
+
+    button.primary {
+      background: var(--crema);
+      color: var(--azul);
+      border-color: var(--crema);
+    }
+
+    button.primary:hover {
       background: #ffffff;
     }
 
-    .page-info {
-      color: #fff6df;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      padding: 0 6px;
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
-    .viewer-wrap {
-      max-width: 940px;
+    .viewer {
+      max-width: 980px;
       margin: 0 auto;
-      background: rgba(255, 250, 240, 0.78);
+      padding: 14px;
+      background: rgba(255,250,240,0.76);
       border: 1px solid var(--borde);
-      border-radius: 22px;
-      padding: 12px;
-      box-shadow: 0 12px 32px rgba(20, 36, 63, 0.13);
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(20,36,63,0.12);
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .canvas-wrap {
+      min-width: max-content;
+      text-align: center;
     }
 
     canvas {
       display: block;
       margin: 0 auto;
-      max-width: 100%;
-      height: auto;
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+      border-radius: 8px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.18);
     }
 
-    .nota {
-      max-width: 900px;
-      margin: 12px auto 0;
+    .message {
+      padding: 28px 14px;
       text-align: center;
-      font-family: Arial, sans-serif;
-      color: #5d5a50;
-      font-size: 12px;
-      line-height: 1.4;
+      color: var(--azul);
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .fullscreen-mode {
+      background: var(--fondo);
+    }
+
+    .fullscreen-mode .app {
+      padding: 10px;
+    }
+
+    .fullscreen-mode .controls {
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     @media (max-width: 560px) {
       .app {
-        padding: 10px 8px 22px;
-      }
-
-      .header {
-        padding: 14px 12px;
-        border-radius: 17px;
-      }
-
-      .sub {
-        font-size: 13px;
+        padding: 8px 6px 18px;
       }
 
       .controls {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        border-radius: 0 0 16px 16px;
-        margin-bottom: 10px;
+        padding: 12px 8px;
+        border-radius: 16px;
       }
 
-    button {
-  width: 50px;
-  height: 42px;
-  font-size: 21px;
-}
+      .status {
+        font-size: 12px;
+        line-height: 1.4;
+      }
 
-      .viewer-wrap {
+      button {
+        padding: 10px 12px;
+        font-size: 11px;
+      }
+
+      .viewer {
         padding: 8px;
         border-radius: 16px;
       }
-    }/* Botones más visibles para el lector */
-.controls button {
-  width: 64px !important;
-  height: 48px !important;
-  font-size: 24px !important;
-  font-weight: 900 !important;
-  padding: 0 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.controls {
-  gap: 14px !important;
-}
-
-.page-info {
-  font-size: 15px !important;
-}
-
-@media (max-width: 560px) {
-  .controls button {
-    width: 58px !important;
-    height: 46px !important;
-    font-size: 23px !important;
-  }
-
-  .controls {
-    gap: 10px !important;
-  }
-
-  .page-info {
-    font-size: 14px !important;
-  }
-}
+    }
   </style>
 </head>
 
 <body>
   <main class="app">
-   
-
     <section class="controls">
-      <button id="prev">←</button>
-      <span class="page-info">
-        Página <span id="page_num">1</span> de <span id="page_count">...</span>
-      </span>
-      <button id="next">→</button>
-      <button id="zoomOut">−</button>
-      <button id="zoomIn">+</button>
+      <div class="status">
+        Página <span id="page_num">1</span> de <span id="page_count">...</span> · Zoom <span id="zoom_level">...</span>%
+      </div>
+
+      <div class="row">
+        <button id="prev">← Anterior</button>
+        <button id="next">Siguiente →</button>
+      </div>
+
+      <div class="row">
+        <button id="zoomOut">Zoom -</button>
+        <button id="fitWidth" class="primary">Ajustar ancho</button>
+        <button id="readBig" class="primary">Leer más grande</button>
+        <button id="zoomIn">Zoom +</button>
+      </div>
+
+      <div class="row">
+        <button id="fullScreen">Pantalla completa</button>
+      </div>
     </section>
 
-    <section class="viewer-wrap">
-      <canvas id="pdf-canvas"></canvas>
+    <section class="viewer" id="viewer">
+      <div class="canvas-wrap">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
     </section>
-
-    
   </main>
 
   <script type="module">
@@ -249,34 +211,62 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
 
-    const url = '7-bloqueos-gratuito-bases.pdf';
+    const url = 'guia-gratuita-bases.pdf';
 
     let pdfDoc = null;
     let pageNum = 1;
     let pageRendering = false;
     let pageNumPending = null;
-    let scale = window.innerWidth < 560 ? 1.05 : 1.35;
+    let currentScale = 1;
+    let fitMode = true;
 
     const canvas = document.getElementById('pdf-canvas');
     const ctx = canvas.getContext('2d');
+    const viewer = document.getElementById('viewer');
+
+    const pageNumEl = document.getElementById('page_num');
+    const pageCountEl = document.getElementById('page_count');
+    const zoomLevelEl = document.getElementById('zoom_level');
+
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    function updateButtons() {
+      prevBtn.disabled = pageNum <= 1;
+      nextBtn.disabled = pdfDoc && pageNum >= pdfDoc.numPages;
+    }
+
+    function calculateFitScale(page) {
+      const baseViewport = page.getViewport({ scale: 1 });
+      const availableWidth = viewer.clientWidth - 28;
+      return availableWidth / baseViewport.width;
+    }
 
     function renderPage(num) {
       pageRendering = true;
 
       pdfDoc.getPage(num).then((page) => {
-        const viewport = page.getViewport({ scale });
+        if (fitMode) {
+          currentScale = calculateFitScale(page);
+        }
 
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+        const viewport = page.getViewport({ scale: currentScale });
+        const outputScale = window.devicePixelRatio || 1;
+
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+
+        canvas.style.width = Math.floor(viewport.width) + 'px';
+        canvas.style.height = Math.floor(viewport.height) + 'px';
+
+        ctx.setTransform(outputScale, 0, 0, outputScale, 0, 0);
 
         const renderContext = {
           canvasContext: ctx,
           viewport: viewport
         };
 
-        const renderTask = page.render(renderContext);
-
-        renderTask.promise.then(() => {
+        page.render(renderContext).promise.then(() => {
           pageRendering = false;
 
           if (pageNumPending !== null) {
@@ -284,9 +274,11 @@
             pageNumPending = null;
           }
         });
-      });
 
-      document.getElementById('page_num').textContent = num;
+        pageNumEl.textContent = num;
+        zoomLevelEl.textContent = Math.round(currentScale * 100);
+        updateButtons();
+      });
     }
 
     function queueRenderPage(num) {
@@ -297,41 +289,81 @@
       }
     }
 
-    function onPrevPage() {
+    function previousPage() {
       if (pageNum <= 1) return;
       pageNum--;
       queueRenderPage(pageNum);
     }
 
-    function onNextPage() {
+    function nextPage() {
       if (pageNum >= pdfDoc.numPages) return;
       pageNum++;
       queueRenderPage(pageNum);
     }
 
     function zoomIn() {
-      scale += 0.15;
+      fitMode = false;
+      currentScale += 0.15;
       queueRenderPage(pageNum);
     }
 
     function zoomOut() {
-      if (scale <= 0.65) return;
-      scale -= 0.15;
+      fitMode = false;
+      if (currentScale <= 0.45) return;
+      currentScale -= 0.15;
       queueRenderPage(pageNum);
     }
 
-    document.getElementById('prev').addEventListener('click', onPrevPage);
-    document.getElementById('next').addEventListener('click', onNextPage);
+    function fitWidth() {
+      fitMode = true;
+      queueRenderPage(pageNum);
+    }
+
+    function readBig() {
+      fitMode = false;
+      currentScale = currentScale * 1.35;
+      queueRenderPage(pageNum);
+    }
+
+    function toggleFullScreen() {
+      const doc = document;
+      const root = document.documentElement;
+
+      if (!doc.fullscreenElement) {
+        root.requestFullscreen?.();
+      } else {
+        doc.exitFullscreen?.();
+      }
+    }
+
+    document.getElementById('prev').addEventListener('click', previousPage);
+    document.getElementById('next').addEventListener('click', nextPage);
     document.getElementById('zoomIn').addEventListener('click', zoomIn);
     document.getElementById('zoomOut').addEventListener('click', zoomOut);
+    document.getElementById('fitWidth').addEventListener('click', fitWidth);
+    document.getElementById('readBig').addEventListener('click', readBig);
+    document.getElementById('fullScreen').addEventListener('click', toggleFullScreen);
+
+    document.addEventListener('fullscreenchange', () => {
+      document.body.classList.toggle('fullscreen-mode', !!document.fullscreenElement);
+      setTimeout(() => {
+        if (pdfDoc) queueRenderPage(pageNum);
+      }, 250);
+    });
+
+    window.addEventListener('resize', () => {
+      if (fitMode && pdfDoc) {
+        queueRenderPage(pageNum);
+      }
+    });
 
     pdfjsLib.getDocument(url).promise.then((pdfDoc_) => {
       pdfDoc = pdfDoc_;
-      document.getElementById('page_count').textContent = pdfDoc.numPages;
+      pageCountEl.textContent = pdfDoc.numPages;
       renderPage(pageNum);
     }).catch(() => {
-      document.querySelector('.viewer-wrap').innerHTML =
-        '<p style="font-family:Arial,sans-serif;text-align:center;color:#14243f;padding:20px;">No se pudo cargar el PDF. Revisa que el nombre del archivo esté escrito exactamente igual.</p>';
+      viewer.innerHTML =
+        '<p class="message">No se pudo cargar el PDF. Revisa que el nombre del archivo esté escrito exactamente igual dentro del código.</p>';
     });
   </script>
 </body>
