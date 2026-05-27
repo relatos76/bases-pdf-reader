@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
   <title>Lector PDF | Bases de la Música</title>
 
@@ -38,7 +38,7 @@
       top: 0;
       z-index: 999;
       width: 100%;
-      max-width: 760px;
+      max-width: 820px;
       margin: 0 auto 10px;
       background: var(--azul);
       color: var(--crema);
@@ -63,6 +63,7 @@
       font-weight: 800;
       cursor: pointer;
       white-space: nowrap;
+      touch-action: manipulation;
     }
 
     .reader-bar button:hover {
@@ -80,7 +81,7 @@
       cursor: not-allowed;
     }
 
-    /* Flechas más visibles */
+    /* Flechas visibles */
     #prev,
     #next {
       width: 46px;
@@ -92,6 +93,27 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+    }
+
+    /* Botones de zoom grandes */
+    .zoom-symbol {
+      width: 56px;
+      height: 46px;
+      padding: 0 !important;
+      font-size: 31px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      border-radius: 18px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--crema) !important;
+      color: var(--azul) !important;
+      border-color: var(--crema) !important;
+    }
+
+    .zoom-symbol:hover {
+      background: #ffffff !important;
     }
 
     .page-info {
@@ -157,6 +179,13 @@
         font-size: 26px;
       }
 
+      .zoom-symbol {
+        width: 56px;
+        height: 48px;
+        font-size: 32px !important;
+        border-radius: 16px !important;
+      }
+
       .page-info {
         font-size: 11px;
       }
@@ -180,7 +209,10 @@
       </span>
 
       <button id="next">→</button>
-      <button id="bigBtn" class="primary">Grande</button>
+
+      <button id="zoomOut" class="zoom-symbol" type="button" title="Alejar">−</button>
+      <button id="zoomIn" class="zoom-symbol" type="button" title="Acercar">+</button>
+
       <button id="fullBtn">Pantalla</button>
       <button id="exitBtn" class="primary">Salir</button>
     </section>
@@ -206,8 +238,13 @@
     let pageNum = 1;
     let pageRendering = false;
     let pageNumPending = null;
+
     let currentScale = 1;
-    let bigMode = false;
+    let zoomLevel = 1;
+
+    const ZOOM_STEP = 0.25;
+    const MIN_ZOOM = 1;
+    const MAX_ZOOM = 3;
 
     const canvas = document.getElementById('pdf-canvas');
     const ctx = canvas.getContext('2d');
@@ -217,7 +254,8 @@
     const pageCountEl = document.getElementById('page_count');
     const prevBtn = document.getElementById('prev');
     const nextBtn = document.getElementById('next');
-    const bigBtn = document.getElementById('bigBtn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const zoomInBtn = document.getElementById('zoomIn');
 
     function calculateFitScale(page) {
       const baseViewport = page.getViewport({ scale: 1 });
@@ -228,6 +266,9 @@
     function updateButtons() {
       prevBtn.disabled = pageNum <= 1;
       nextBtn.disabled = pdfDoc && pageNum >= pdfDoc.numPages;
+
+      zoomOutBtn.disabled = zoomLevel <= MIN_ZOOM;
+      zoomInBtn.disabled = zoomLevel >= MAX_ZOOM;
     }
 
     function renderPage(num) {
@@ -235,7 +276,8 @@
 
       pdfDoc.getPage(num).then((page) => {
         const fitScale = calculateFitScale(page);
-        currentScale = bigMode ? fitScale * 1.55 : fitScale;
+
+        currentScale = fitScale * zoomLevel;
 
         const viewport = page.getViewport({ scale: currentScale });
         const outputScale = window.devicePixelRatio || 1;
@@ -291,11 +333,18 @@
       queueRenderPage(pageNum);
     }
 
-    function toggleBig() {
-      bigMode = !bigMode;
-      bigBtn.textContent = bigMode ? 'Ajustar' : 'Grande';
+    function zoomIn() {
+      zoomLevel = Math.min(MAX_ZOOM, zoomLevel + ZOOM_STEP);
       viewer.scrollLeft = 0;
       queueRenderPage(pageNum);
+      updateButtons();
+    }
+
+    function zoomOut() {
+      zoomLevel = Math.max(MIN_ZOOM, zoomLevel - ZOOM_STEP);
+      viewer.scrollLeft = 0;
+      queueRenderPage(pageNum);
+      updateButtons();
     }
 
     function toggleFullScreen() {
@@ -318,7 +367,9 @@
 
     prevBtn.addEventListener('click', previousPage);
     nextBtn.addEventListener('click', nextPage);
-    bigBtn.addEventListener('click', toggleBig);
+    zoomInBtn.addEventListener('click', zoomIn);
+    zoomOutBtn.addEventListener('click', zoomOut);
+
     document.getElementById('fullBtn').addEventListener('click', toggleFullScreen);
     document.getElementById('exitBtn').addEventListener('click', exitReader);
 
