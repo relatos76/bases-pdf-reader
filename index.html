@@ -141,9 +141,25 @@
     }
 
     .canvas-wrap {
-      min-width: max-content;
-      text-align: center;
-    }
+  min-width: max-content;
+  text-align: center;
+  position: relative;
+}
+
+#link-layer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+#link-layer a {
+  position: absolute;
+  display: block;
+  pointer-events: auto;
+  background: transparent;
+}
 
     canvas {
       display: block;
@@ -223,7 +239,8 @@
 
     <section class="viewer" id="viewer">
       <div class="canvas-wrap">
-        <canvas id="pdf-canvas"></canvas>
+       <canvas id="pdf-canvas"></canvas>
+<div id="link-layer"></div>
       </div>
     </section>
 
@@ -253,6 +270,7 @@
     const canvas = document.getElementById('pdf-canvas');
     const ctx = canvas.getContext('2d');
     const viewer = document.getElementById('viewer');
+    const linkLayer = document.getElementById('link-layer');
 
     const pageNumEl = document.getElementById('page_num');
     const pageCountEl = document.getElementById('page_count');
@@ -291,6 +309,9 @@
 
         canvas.style.width = Math.floor(viewport.width) + 'px';
         canvas.style.height = Math.floor(viewport.height) + 'px';
+        linkLayer.innerHTML = '';
+linkLayer.style.width = Math.floor(viewport.width) + 'px';
+linkLayer.style.height = Math.floor(viewport.height) + 'px';
 
         ctx.setTransform(outputScale, 0, 0, outputScale, 0, 0);
 
@@ -299,14 +320,41 @@
           viewport: viewport
         };
 
-        page.render(renderContext).promise.then(() => {
-          pageRendering = false;
+       page.render(renderContext).promise.then(() => {
+  page.getAnnotations({ intent: 'display' }).then((annotations) => {
+    linkLayer.innerHTML = '';
 
-          if (pageNumPending !== null) {
-            renderPage(pageNumPending);
-            pageNumPending = null;
-          }
-        });
+    annotations.forEach((annotation) => {
+      if (!annotation.url) return;
+
+      const rect = viewport.convertToViewportRectangle(annotation.rect);
+      const left = Math.min(rect[0], rect[2]);
+      const top = Math.min(rect[1], rect[3]);
+      const width = Math.abs(rect[0] - rect[2]);
+      const height = Math.abs(rect[1] - rect[3]);
+
+      const link = document.createElement('a');
+      link.href = annotation.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+
+      link.style.left = left + 'px';
+      link.style.top = top + 'px';
+      link.style.width = width + 'px';
+      link.style.height = height + 'px';
+
+      linkLayer.appendChild(link);
+    });
+
+    pageRendering = false;
+
+    if (pageNumPending !== null) {
+      renderPage(pageNumPending);
+      pageNumPending = null;
+    }
+  });
+});
+          
 
         pageNumEl.textContent = num;
         updateButtons();
