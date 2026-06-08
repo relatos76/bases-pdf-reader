@@ -235,7 +235,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 
-    const url = '7-bloqueos-gratuito-bases.pdf';
+    const url = 'que-acorde-viene-despues.pdf?v=1';
    const exitUrl = 'https://basesdelamusica.com/';
 
     let pdfDoc = null;
@@ -394,8 +394,8 @@
       pageCountEl.textContent = pdfDoc.numPages;
       renderPage(pageNum);
     }).catch(() => {
-      viewer.innerHTML =
-        '<p class="message">No se pudo cargar el PDF. Revisa que el archivo se llame exactamente: 7-bloqueos-gratuito-bases.pdf</p>';
+     viewer.innerHTML =
+  '<p class="message">No se pudo cargar el PDF. Revisa que el archivo se llame exactamente: que-acorde-viene-despues.pdf</p>';
     });
   </script>
 </body>
