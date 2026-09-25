@@ -95,27 +95,22 @@
       justify-content: center;
     }
 
-    /* Botones de zoom grandes */
-   /* Botones de zoom */
-.zoom-symbol {
-  width: 46px;
-  height: 42px;
-  padding: 0 !important;
-  font-size: 27px !important;
-  font-weight: 900 !important;
-  line-height: 1 !important;
-  border-radius: 15px !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--crema) !important;
-  color: var(--azul) !important;
-  border-color: var(--crema) !important;
-}
-
-.zoom-symbol:hover {
-  background: #ffffff !important;
-}
+    /* Botones de zoom */
+    .zoom-symbol {
+      width: 46px;
+      height: 42px;
+      padding: 0 !important;
+      font-size: 27px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      border-radius: 15px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--crema) !important;
+      color: var(--azul) !important;
+      border-color: var(--crema) !important;
+    }
 
     .zoom-symbol:hover {
       background: #ffffff !important;
@@ -141,25 +136,25 @@
     }
 
     .canvas-wrap {
-  min-width: max-content;
-  text-align: center;
-  position: relative;
-}
+      min-width: max-content;
+      text-align: center;
+      position: relative;
+    }
 
-#link-layer {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  pointer-events: none;
-}
+    #link-layer {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
 
-#link-layer a {
-  position: absolute;
-  display: block;
-  pointer-events: auto;
-  background: transparent;
-}
+    #link-layer a {
+      position: absolute;
+      display: block;
+      pointer-events: auto;
+      background: transparent;
+    }
 
     canvas {
       display: block;
@@ -181,16 +176,17 @@
       .app {
         padding: 6px 4px 24px;
       }
-.reader-bar {
-  border-radius: 18px;
-  gap: 4px;
-  padding: 7px 6px;
-}
+
+      .reader-bar {
+        border-radius: 18px;
+        gap: 4px;
+        padding: 7px 6px;
+      }
 
       .reader-bar button {
-  padding: 7px 8px;
-  font-size: 10.5px;
-}
+        padding: 7px 8px;
+        font-size: 10.5px;
+      }
 
       #prev,
       #next {
@@ -200,11 +196,11 @@
       }
 
       .zoom-symbol {
-  width: 44px;
-  height: 42px;
-  font-size: 27px !important;
-  border-radius: 14px !important;
-}
+        width: 44px;
+        height: 42px;
+        font-size: 27px !important;
+        border-radius: 14px !important;
+      }
 
       .page-info {
         font-size: 11px;
@@ -239,8 +235,8 @@
 
     <section class="viewer" id="viewer">
       <div class="canvas-wrap">
-       <canvas id="pdf-canvas"></canvas>
-<div id="link-layer"></div>
+        <canvas id="pdf-canvas"></canvas>
+        <div id="link-layer"></div>
       </div>
     </section>
 
@@ -253,7 +249,6 @@
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
 
     const url = 'que-acorde-viene-despues.pdf?v=2';
-   const exitUrl = 'https://basesdelamusica.com/';
 
     let pdfDoc = null;
     let pageNum = 1;
@@ -309,9 +304,10 @@
 
         canvas.style.width = Math.floor(viewport.width) + 'px';
         canvas.style.height = Math.floor(viewport.height) + 'px';
+
         linkLayer.innerHTML = '';
-linkLayer.style.width = Math.floor(viewport.width) + 'px';
-linkLayer.style.height = Math.floor(viewport.height) + 'px';
+        linkLayer.style.width = Math.floor(viewport.width) + 'px';
+        linkLayer.style.height = Math.floor(viewport.height) + 'px';
 
         ctx.setTransform(outputScale, 0, 0, outputScale, 0, 0);
 
@@ -320,41 +316,41 @@ linkLayer.style.height = Math.floor(viewport.height) + 'px';
           viewport: viewport
         };
 
-       page.render(renderContext).promise.then(() => {
-  page.getAnnotations({ intent: 'display' }).then((annotations) => {
-    linkLayer.innerHTML = '';
+        page.render(renderContext).promise.then(() => {
+          page.getAnnotations({ intent: 'display' }).then((annotations) => {
+            linkLayer.innerHTML = '';
 
-    annotations.forEach((annotation) => {
-      if (!annotation.url) return;
+            annotations.forEach((annotation) => {
+              if (!annotation.url) return;
 
-      const rect = viewport.convertToViewportRectangle(annotation.rect);
-      const left = Math.min(rect[0], rect[2]);
-      const top = Math.min(rect[1], rect[3]);
-      const width = Math.abs(rect[0] - rect[2]);
-      const height = Math.abs(rect[1] - rect[3]);
+              const rect = viewport.convertToViewportRectangle(annotation.rect);
+              const left = Math.min(rect[0], rect[2]);
+              const top = Math.min(rect[1], rect[3]);
+              const width = Math.abs(rect[0] - rect[2]);
+              const height = Math.abs(rect[1] - rect[3]);
 
-      const link = document.createElement('a');
-      link.href = annotation.url;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
+              const link = document.createElement('a');
 
-      link.style.left = left + 'px';
-      link.style.top = top + 'px';
-      link.style.width = width + 'px';
-      link.style.height = height + 'px';
+              link.href = annotation.url;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
 
-      linkLayer.appendChild(link);
-    });
+              link.style.left = left + 'px';
+              link.style.top = top + 'px';
+              link.style.width = width + 'px';
+              link.style.height = height + 'px';
 
-    pageRendering = false;
+              linkLayer.appendChild(link);
+            });
 
-    if (pageNumPending !== null) {
-      renderPage(pageNumPending);
-      pageNumPending = null;
-    }
-  });
-});
-          
+            pageRendering = false;
+
+            if (pageNumPending !== null) {
+              renderPage(pageNumPending);
+              pageNumPending = null;
+            }
+          });
+        });
 
         pageNumEl.textContent = num;
         updateButtons();
@@ -371,30 +367,52 @@ linkLayer.style.height = Math.floor(viewport.height) + 'px';
 
     function previousPage() {
       if (pageNum <= 1) return;
+
       pageNum--;
       viewer.scrollLeft = 0;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
       queueRenderPage(pageNum);
     }
 
     function nextPage() {
       if (pageNum >= pdfDoc.numPages) return;
+
       pageNum++;
       viewer.scrollLeft = 0;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
       queueRenderPage(pageNum);
     }
 
     function zoomIn() {
-      zoomLevel = Math.min(MAX_ZOOM, zoomLevel + ZOOM_STEP);
+      zoomLevel = Math.min(
+        MAX_ZOOM,
+        zoomLevel + ZOOM_STEP
+      );
+
       viewer.scrollLeft = 0;
+
       queueRenderPage(pageNum);
       updateButtons();
     }
 
     function zoomOut() {
-      zoomLevel = Math.max(MIN_ZOOM, zoomLevel - ZOOM_STEP);
+      zoomLevel = Math.max(
+        MIN_ZOOM,
+        zoomLevel - ZOOM_STEP
+      );
+
       viewer.scrollLeft = 0;
+
       queueRenderPage(pageNum);
       updateButtons();
     }
@@ -410,41 +428,80 @@ linkLayer.style.height = Math.floor(viewport.height) + 'px';
     }
 
     function exitReader() {
-      try {
-        window.top.location.href = exitUrl;
-      } catch (error) {
-        window.location.href = exitUrl;
+      if (document.fullscreenElement) {
+        document.exitFullscreen?.();
       }
     }
 
-    prevBtn.addEventListener('click', previousPage);
-    nextBtn.addEventListener('click', nextPage);
-    zoomInBtn.addEventListener('click', zoomIn);
-    zoomOutBtn.addEventListener('click', zoomOut);
+    prevBtn.addEventListener(
+      'click',
+      previousPage
+    );
 
-    document.getElementById('fullBtn').addEventListener('click', toggleFullScreen);
-    document.getElementById('exitBtn').addEventListener('click', exitReader);
+    nextBtn.addEventListener(
+      'click',
+      nextPage
+    );
 
-    document.addEventListener('fullscreenchange', () => {
-      setTimeout(() => {
-        if (pdfDoc) queueRenderPage(pageNum);
-      }, 250);
-    });
+    zoomInBtn.addEventListener(
+      'click',
+      zoomIn
+    );
 
-    window.addEventListener('resize', () => {
-      if (pdfDoc) {
-        queueRenderPage(pageNum);
+    zoomOutBtn.addEventListener(
+      'click',
+      zoomOut
+    );
+
+    document
+      .getElementById('fullBtn')
+      .addEventListener(
+        'click',
+        toggleFullScreen
+      );
+
+    document
+      .getElementById('exitBtn')
+      .addEventListener(
+        'click',
+        exitReader
+      );
+
+    document.addEventListener(
+      'fullscreenchange',
+      () => {
+        setTimeout(() => {
+          if (pdfDoc) {
+            queueRenderPage(pageNum);
+          }
+        }, 250);
       }
-    });
+    );
 
-    pdfjsLib.getDocument(url).promise.then((pdfDoc_) => {
-      pdfDoc = pdfDoc_;
-      pageCountEl.textContent = pdfDoc.numPages;
-      renderPage(pageNum);
-    }).catch(() => {
-     viewer.innerHTML =
-  '<p class="message">No se pudo cargar el PDF. Revisa que el archivo se llame exactamente: que-acorde-viene-despues.pdf</p>';
-    });
+    window.addEventListener(
+      'resize',
+      () => {
+        if (pdfDoc) {
+          queueRenderPage(pageNum);
+        }
+      }
+    );
+
+    pdfjsLib
+      .getDocument(url)
+      .promise
+      .then((pdfDoc_) => {
+        pdfDoc = pdfDoc_;
+
+        pageCountEl.textContent =
+          pdfDoc.numPages;
+
+        renderPage(pageNum);
+      })
+      .catch(() => {
+        viewer.innerHTML =
+          '<p class="message">No se pudo cargar el PDF. Revisa que el archivo se llame exactamente: que-acorde-viene-despues.pdf</p>';
+      });
   </script>
 </body>
 </html>
