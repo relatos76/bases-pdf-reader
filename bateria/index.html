@@ -105,15 +105,25 @@
       max-width: 980px;
       margin: 0 auto;
       padding: 8px;
+      /* Fixed viewport lets the book scroll vertically, including inside Carrd. */
+      height: calc(100vh - 112px);
+      height: calc(100dvh - 112px);
+      min-height: 240px;
+      max-height: 900px;
       background: rgba(255,250,240,0.85);
       border: 1px solid var(--borde);
       border-radius: 18px;
       overflow: auto;
       -webkit-overflow-scrolling: touch;
-      /* Native one-finger scrolling; two-finger zoom handled by the reader. */
+      /* Native scrolling at original size; touch panning when zoomed. */
       touch-action: pan-x pan-y;
       overscroll-behavior: contain;
       box-shadow: 0 10px 28px rgba(20,36,63,0.10);
+    }
+
+    /* When zoomed, JavaScript handles one-finger panning. */
+    .viewer.zoomed {
+      touch-action: none;
     }
 
     .canvas-wrap {
@@ -204,7 +214,7 @@
       <button id="exitBtn" class="primary">Salir</button>
     </section>
 
-    <section class="viewer" id="viewer" aria-label="Página del libro. En pantalla táctil, amplía o reduce usando dos dedos.">
+    <section class="viewer" id="viewer" aria-label="Página del libro. Amplía o reduce con dos dedos y, una vez ampliada, desplázate con uno.">
       <div class="canvas-wrap">
         <canvas id="pdf-canvas"></canvas>
         <div id="link-layer"></div>
@@ -231,6 +241,7 @@
     let zoomLevel = 1;
     let renderedZoomLevel = 1;
     let pinch = null;
+    let pan = null;
 
     const MIN_ZOOM = 1;
     const MAX_ZOOM = 4;
@@ -394,7 +405,25 @@
       };
     }
 
+    function updateTouchMode() {
+      viewer.classList.toggle('zoomed', zoomLevel > 1.01);
+    }
+
+    function beginPan(touch) {
+      pan = {
+        x: touch.clientX,
+        y: touch.clientY,
+        left: viewer.scrollLeft,
+        top: viewer.scrollTop
+      };
+    }
+
     function beginPinch(event) {
+      if (event.touches.length === 1) {
+        if (zoomLevel > 1.01) beginPan(event.touches[0]);
+        return;
+      }
+      pan = null;
       if (!pdfDoc || pageRendering || !canvas.dataset.renderWidth || event.touches.length !== 2) return;
       const center = touchCenter(event.touches);
       const box = viewer.getBoundingClientRect();
@@ -427,25 +456,44 @@
     viewer.addEventListener('touchstart', beginPinch, { passive: false });
 
     viewer.addEventListener('touchmove', (event) => {
-      if (!pinch || event.touches.length !== 2) return;
-      event.preventDefault();
-      const distance = touchDistance(event.touches);
-      if (!pinch.distance) return;
-      zoomLevel = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
-        pinch.zoom * distance / pinch.distance));
-      previewPinch();
-      const ratio = zoomLevel / pinch.zoom;
-      viewer.scrollLeft = (pinch.scrollLeft + pinch.x) * ratio - pinch.x;
-      viewer.scrollTop = (pinch.scrollTop + pinch.y) * ratio - pinch.y;
+      if (pinch && event.touches.length === 2) {
+        event.preventDefault();
+        const distance = touchDistance(event.touches);
+        if (!pinch.distance) return;
+        zoomLevel = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM,
+          pinch.zoom * distance / pinch.distance));
+        previewPinch();
+        const ratio = zoomLevel / pinch.zoom;
+        viewer.scrollLeft = (pinch.scrollLeft + pinch.x) * ratio - pinch.x;
+        viewer.scrollTop = (pinch.scrollTop + pinch.y) * ratio - pinch.y;
+        return;
+      }
+
+      // Drag the enlarged PDF with one finger, rather than scrolling Carrd.
+      if (pan && event.touches.length === 1 && zoomLevel > 1.01) {
+        event.preventDefault();
+        const touch = event.touches[0];
+        viewer.scrollLeft = pan.left + pan.x - touch.clientX;
+        viewer.scrollTop = pan.top + pan.y - touch.clientY;
+      }
     }, { passive: false });
 
-    function endPinch(event) {
-      if (!pinch || event.touches.length >= 2) return;
-      pinch = null;
-      queueRenderPage(pageNum);
+    function endTouch(event) {
+      if (pinch && event.touches.length < 2) {
+        pinch = null;
+        updateTouchMode();
+        queueRenderPage(pageNum); // Rerender sharply once the gesture ends.
+        if (event.touches.length === 1 && zoomLevel > 1.01) {
+          beginPan(event.touches[0]);
+        } else {
+          pan = null;
+        }
+      } else if (event.touches.length === 0) {
+        pan = null;
+      }
     }
-    viewer.addEventListener('touchend', endPinch, { passive: true });
-    viewer.addEventListener('touchcancel', endPinch, { passive: true });
+    viewer.addEventListener('touchend', endTouch, { passive: true });
+    viewer.addEventListener('touchcancel', endTouch, { passive: true });
 
     function toggleFullScreen() {
       const root = document.documentElement;
